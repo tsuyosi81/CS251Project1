@@ -74,6 +74,8 @@ int main() {
       caesarEncryptCommand();
     } else if (command == "D" || command == "d") {
       caesarDecryptCommand(dictionary);
+    } else if (command == "A" || command == "a") {
+      applyRandSubstCipherCommand();
     }
 
     cout << endl;
@@ -216,43 +218,66 @@ int numWordsIn(const vector<string>& words, const vector<string>& dict) {
 }
 
 void caesarDecryptCommand(const vector<string>& dict) {
+  int validCount = 0;
+  bool found = false;
+  bool meetsThreshold = false;
   string line;
+  vector<string> originalWords, candidateWords, cleaned;
+
+  // User Input
   cout << "Enter the text to Caesar decrypt:" << endl;
   getline(cin, line);
 
-  bool found = false;  // track if any good decryptions found
-  vector<string> originalWords =
-      splitBySpaces(line);  // split input line into words
+  // Process Input
+  originalWords = splitBySpaces(line);
 
-  // Change the loop to ensure rotations are checked in the correct order
-  for (int i = 0; i < 26; i++) {
-    vector<string> candidateWords = originalWords;
+  // Brute Force Loop (Checking all 26 rotations)
+  for (int i = 0; i < ALPHABET.length(); i++) {
+    candidateWords = originalWords;  // make a copy of original words so that we
+                                     // can rotate them separately.
 
-    // The test expects us to check rotations in an order that prints
-    // decryptions found at "earlier" shift amounts first.
-    rot(candidateWords, i);
+    rot(candidateWords, i);  // Decrypt copied words with rotation i
 
-    vector<string> cleaned;
-    for (const string& w : candidateWords) {
-      cleaned.push_back(clean(w));
+    // Prepare a clean version of the words for dictionary checking
+    cleaned.clear();  // call clear to empty the cleaned vector
+    for (const string& w :
+         candidateWords) {  // iterate through each word from candidateWords
+                            // (copied & rotated)
+      cleaned.push_back(clean(w));  // clean each word and add to cleaned vector
     }
 
-    int validCount = numWordsIn(cleaned, dict);
+    validCount =
+        numWordsIn(cleaned, dict);  // Count how many words match the dictionary
 
-    // Maintain your improved threshold logic
-    bool meetsThreshold = false;
-    if (cleaned.size() <= 2) {
-      meetsThreshold = (validCount == (int)cleaned.size() && validCount > 0);
+    // Threshold Logic (Deciding if the decryption is in the dictionary)
+    meetsThreshold =
+        false;  // If the attempt passed the quality check, it prints the
+                // readable version and sets found to true
+    if (cleaned.size() <=
+        2) {  // if the cleaned size is less than or equal to 2
+      // For short messages, require 100% match
+      meetsThreshold =
+          (validCount == (int)cleaned.size() &&
+           validCount > 0);  // set meetsThreshold to true if validCount equals
+                             // cleaned size and validCount is greater than 0
     } else {
-      meetsThreshold = (validCount >= (int)cleaned.size() / 2.0);
+      // For longer messages, 50% match is sufficient
+      meetsThreshold =
+          (validCount >=
+           (int)cleaned.size() /
+               2.0);  // set meetsThreshold to true if validCount is greater
+                      // than or equal to half of cleaned size
     }
 
+    // 6. Output Result
     if (meetsThreshold) {
-      cout << joinWithSpaces(candidateWords) << endl;
+      cout << joinWithSpaces(candidateWords)
+           << endl;  // print the joined candidate words
       found = true;
     }
   }
 
+  // 7. Final check if nothing was found
   if (!found) {
     cout << "No good decryptions found" << endl;
   }
@@ -263,12 +288,37 @@ void caesarDecryptCommand(const vector<string>& dict) {
 #pragma region SubstEnc
 
 string applySubstCipher(const vector<char>& cipher, const string& s) {
-  // TODO: student
-  return "";
+  string result;  // declare result string
+
+  for (char c : s) {  // iterate through each character in the string
+
+    if (isalpha(c)) {  // check if the character is alphabet
+      char upperC =
+          toupper(c);  // convert the character into uppercase (toupper)
+      int charIdx =
+          ALPHABET.find(upperC);  // find the index of the character (0-25)
+      char substitutedChar = cipher[charIdx];  // get the substituted character
+      result += substitutedChar;  // append the substituted character
+    } else {                      // if not alphabet,
+      result += c;                // append the original character
+    }
+  }
+  return result;
 }
 
 void applyRandSubstCipherCommand() {
-  // TODO: student
+  string line;
+  cout << "Enter the text to encrypt: ";
+  getline(cin, line);
+
+  // Generate a random substitution cipher
+  vector<char> cipher = genRandomSubstCipher();
+
+  // Encrypt
+  string encrypted = applySubstCipher(cipher, line);
+
+  // Print result
+  cout << encrypted << endl;
 }
 
 #pragma endregion SubstEnc
