@@ -25,6 +25,20 @@ const string ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 // files.
 
 // When you add a new helper function, make sure to declare it up here!
+vector<string> loadDictionary(const string& filename) {
+  vector<string> dictionary;
+  ifstream file(filename);
+  string word;
+  if (file.is_open()) {
+    while (getline(file, word)) {
+      dictionary.push_back(word);
+    }
+    file.close();
+  } else {
+    cerr << "Error: Could not open file " << filename << endl;
+  }
+  return dictionary;
+}
 
 /**
  * Print instructions for using the program.
@@ -34,6 +48,8 @@ void printMenu();
 int main() {
   Random::seed(time(NULL));
   string command;
+
+  vector<string> dictionary = loadDictionary("dictionary.txt");
 
   cout << "Welcome to Ciphers!" << endl;
   cout << "-------------------" << endl;
@@ -54,7 +70,19 @@ int main() {
               "generator: ";
       getline(cin, seed_str);
       Random::seed(stoi(seed_str));
-    }
+    } else if (command == "C" || command == "c") {
+      caesarEncryptCommand();
+    }  // else if (command == "D" || command == "d") {
+    //   caesarDecryptCommand(dictionary);  // <-- fixed
+    // } else if (command == "A" || command == "a") {
+    //   applyRandSubstCipherCommand();
+    // } else if (command == "E" || command == "e") {
+    //   computeEnglishnessCommand(scorer);
+    // } else if (command == "S" || command == "s") {
+    //   decryptSubstCipherCommand(scorer);
+    // } else if (command == "F" || command == "f") {
+    //   decryptSubstCipherFileCommand(scorer);
+    // }
 
     cout << endl;
 
@@ -62,6 +90,8 @@ int main() {
 
   return 0;
 }
+
+// load dictionary.txt into vector<string> dictionary
 
 void printMenu() {
   cout << "Ciphers Menu" << endl;
@@ -83,30 +113,83 @@ void printMenu() {
 #pragma region CaesarEnc
 
 char rot(char c, int amount) {
-  // TODO: student
-  return 'A';
+  int charIdx = ALPHABET.find(c);  // Find the index of the character (0-25)
+  int newIdx = (charIdx + amount) %
+               26;  // Add the rotation amount to the index: charIdx + amount
+
+  if (newIdx < 0) {  // if the rotation amount/new index is negative, add 26
+    newIdx += 26;
+  }
+
+  char newChar = ALPHABET[newIdx];  // assign new character of the new index
+
+  return newChar;
 }
 
 string rot(const string& line, int amount) {
-  // TODO: student
-  return "";
+  string result;  // declare encrypted result
+
+  for (char c : line) {  // Iterate through string
+
+    if (isalpha(c)) {  // Check if the character is alphabet (isalpha)
+      char upperC =
+          toupper(c);  // Convert the character into uppercase (toupper)
+      char rotatedChar = rot(
+          upperC, amount);  // Rotate the character by calling rot(char, amount)
+      result += rotatedChar;  // Append the rotated character to result
+    } else if (isspace(c)) {  // If not alphabet/space,
+      result += c;            // append the original character to result
+    }
+  }
+  return result;
 }
 
 void caesarEncryptCommand() {
-  // TODO: student
+  string line;
+  string result;
+  int amount;
+
+  cout << "Enter the text to encrypt:" << endl;
+  getline(cin, line);
+
+  cout << "Enter the number of characters to rotate by:" << endl;
+  cin >> amount;
+
+  result =
+      rot(line, amount);  // Call rot(string, amount) to get encrypted result
+
+  cout << "Encrypted result: " << result << endl;
 }
 
 #pragma endregion CaesarEnc
 
 #pragma region CaesarDec
 
+// Decrypt functions
 void rot(vector<string>& strings, int amount) {
-  // TODO: student
+  for (string& s : strings) {      // Iterate through each string
+    string decrypted;              // Declare decrypted string
+    for (char c : s) {             // Iterate through each character
+      if (isalpha(c)) {            // Check if the character is alphabet
+        char upperC = toupper(c);  // Convert to uppercase
+        char rotatedChar = rot(upperC, -amount);  // Rotate by negative amount
+        decrypted += rotatedChar;  // Append rotated character to decrypted
+      } else if (isspace(c)) {     // If not alphabet/space
+        decrypted += c;            // Append original character to decrypted
+      }
+    }
+    s = decrypted;  // Update the original string with decrypted version
+  }
 }
 
 string clean(const string& s) {
-  // TODO: student
-  return "";
+  string cleaned = "";        // declare cleaned string
+  for (char c : s) {          // iterate through each character
+    if (isalpha(c)) {         // check if character is alphabet
+      cleaned += toupper(c);  // convert to uppercase and append to cleaned
+    }
+  }
+  return cleaned;
 }
 
 vector<string> splitBySpaces(const string& s) {
