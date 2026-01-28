@@ -93,44 +93,86 @@ void caesarEncryptCommand() {
 
 // Decrypt functions
 void rot(vector<string>& strings, int amount) {
-  for (string& s : strings) {      // Iterate through each string
-    string decrypted;              // Declare decrypted string
-    for (char c : s) {             // Iterate through each character
-      if (isalpha(c)) {            // Check if the character is alphabet
-        char upperC = toupper(c);  // Convert to uppercase
-        char rotatedChar = rot(upperC, -amount);  // Rotate by negative amount
-        decrypted += rotatedChar;  // Append rotated character to decrypted
-      } else if (isspace(c)) {     // If not alphabet/space
-        decrypted += c;            // Append original character to decrypted
-      }
-    }
-    s = decrypted;  // Update the original string with decrypted version
+  for (string& s : strings) {
+    s = rot(s, amount);
   }
 }
 
-string clean(const string& s) {
-  string cleaned = "";        // declare cleaned string
-  for (char c : s) {          // iterate through each character
-    if (isalpha(c)) {         // check if character is alphabet
-      cleaned += toupper(c);  // convert to uppercase and append to cleaned
-    }
-  }
-  return cleaned;
-}
+// string clean(const string& s) {
+//   string cleaned = "";        // declare cleaned string
+//   for (char c : s) {          // iterate through each character
+//     if (isalpha(c)) {         // check if character is alphabet
+//       cleaned += toupper(c);  // convert to uppercase and append to cleaned
+//     }
+//   }
+//   return cleaned;
+// }
 
-vector<string> splitBySpaces(
-    const string&
-        s) {  // this function splits a string into words based on spaces
-  vector<string> words;
+// vector<string> splitBySpaces(
+//     const string&
+//         s) {  // this function splits a string into words based on spaces
+//   vector<string> words;
 
-  // iterate through the string
-  istringstream stream(s);
-  string word;
-  while (stream >> word) {
-    words.push_back(word);  // add each word to the vector
-  }
-  return words;
-}
+//   // iterate through the string
+//   istringstream stream(s);
+//   string word;
+//   while (stream >> word) {
+//     words.push_back(word);  // add each word to the vector
+//   }
+//   return words;
+// }
+
+// string joinWithSpaces(
+//     const vector<string>&
+//         words) {  // joins a vector of words into a single string with spaces
+//   string result;
+//   for (int i = 0; i < words.size(); i++) {  // iterate through each word
+//     result += words[i];                     // add each word to the result
+//     if (i < words.size() - 1) {             // if not the last word
+//       result += " ";                        // add a space between words
+//     }
+//   }
+//   return result;
+// }
+
+// int numWordsIn(const vector<string>& words, const vector<string>& dict) {
+//   int count = 0;
+//   for (const string& w : words) {   // iterate through each word in words
+//     for (const string& d : dict) {  // iterate through each word in
+//     dictionary
+//       if (w == d) {                 // if word matches dictionary word
+//         count++;                    // increment count
+//         break;
+//       }
+//     }
+//   }
+//   return count;
+// }
+
+// void caesarDecryptCommand(const vector<string>& dict) {
+//   string line;
+//   int amount;
+
+//   cout << "Enter the text to decrypt:" << endl;
+//   getline(cin, line);
+
+//   cout << "Enter the number of characters to rotate by:" << endl;
+//   cin >> amount;
+
+//   vector<string> words = splitBySpaces(line);
+//   rot(words, amount);  // decrypt the words
+
+//   string decryptedLine = joinWithSpaces(words);
+//   cout << "Decrypted result: " << decryptedLine << endl;
+
+//   // Optional: Count valid words in decrypted text
+//   vector<string> cleanedWords;
+//   for (const string& w : words) {
+//     cleanedWords.push_back(clean(w));
+//   }
+//   int validWordCount = numWordsIn(cleanedWords, dict);
+//   cout << "Number of valid dictionary words: " << validWordCount << endl;
+// }
 
 int main() {
   vector<string> dictionary = loadDDictionary("dictionary.txt");
@@ -139,39 +181,55 @@ int main() {
   char c = ALPHABET[2];  // character 'C'
   int amount = -4;       // Expected: 'C' -> 'Y'
 
-  char character = rot(c, amount);
-  string sentence = rot(s, amount);  // expected "cat" -> "YWP"
+  char encChar = rot(c, amount);      // encrypted 'C' -> 'Y'
+  string encString = rot(s, amount);  // expected "cat" -> "YWP"
 
+  cout << "FUNCTION: rot() for char and string encrypt" << endl;
   cout << "Rotating amount: " << amount << endl;
   cout << "Character before rotating: " << c << endl;
-  cout << "Character after rotating: " << character << endl;
-
+  cout << "Character after rotating: " << encChar << endl;
   cout << "String before rotating: " << s << endl;
-  cout << "String after rotating: " << sentence << endl;
+  cout << "String after rotating: " << encString << endl;
 
-  // decrypt example
+  cout << endl;
 
-  cout << "Decrypting example:" << endl;
-  vector<string> testStrings = {"YWP"};
-  rot(testStrings, -4);
-  cout << "Decrypted: " << testStrings[0] << endl;
+  char decChar = rot(encChar, -amount);
+  string decString = rot(encString, -amount);
 
-  // clean example
-  string dirty = "Hello, World! 123";
-  string cleaned = clean(dirty);
-  cout << "Dirty string: " << dirty << endl;
-  cout << "Cleaned string: " << cleaned << endl;
+  cout << "FUNCTION: rot() for char and string decrypt" << endl;
+  cout << "Rotating amount: " << -amount << endl;
+  cout << "Character before rotating: " << encChar << endl;
+  cout << "Character after rotating: " << decChar << endl;
+  cout << "String before rotating: " << encString << endl;
+  cout << "String after rotating: " << decString << endl;
 
-  // splitBySpaces example
-  string phrase = "This is a test";
-  vector<string> words = splitBySpaces(phrase);
-  cout << "Original phrase: " << phrase << endl;
-  cout << "Split words:" << endl;
-  for (const string& word : words) {
-    cout << word << endl;
-  }
+  // // clean example
+  // string dirty = "Hello, World! 123";
+  // string cleaned = clean(dirty);
+  // cout << "Dirty string: " << dirty << endl;
+  // cout << "Cleaned string: " << cleaned << endl;
 
-  caesarEncryptCommand();
+  // // splitBySpaces example
+  // string phrase = "This is a test";
+  // vector<string> words = splitBySpaces(phrase);
+  // cout << "Original phrase: " << phrase << endl;
+  // cout << "Split words:" << endl;
+  // for (const string& word : words) {
+  //   cout << word << endl;
+  // }
+
+  // // joinWithSpaces example
+  // string joined = joinWithSpaces(words);
+  // cout << "Joined phrase: " << joined << endl;
+
+  // // numWordsIn example
+  // vector<string> sampleWords = {"HELLO", "WORLD", "FOO", "BAR"};
+  // vector<string> sampleDict = {"HELLO", "WORLD", "TEST"};
+  // int count = numWordsIn(sampleWords, sampleDict);
+  // cout << "Number of valid dictionary words: " << count << endl;
+
+  // caesarEncryptCommand();
+  // caesarDecryptCommand(dictionary);
 
   return 0;
 }

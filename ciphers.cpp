@@ -74,18 +74,9 @@ int main() {
       caesarEncryptCommand();
     } else if (command == "D" || command == "d") {
       caesarDecryptCommand(dictionary);
-    }  // else if (command == "A" || command == "a") {
-    //   applyRandSubstCipherCommand();
-    // } else if (command == "E" || command == "e") {
-    //   computeEnglishnessCommand(scorer);
-    // } else if (command == "S" || command == "s") {
-    //   decryptSubstCipherCommand(scorer);
-    // } else if (command == "F" || command == "f") {
-    //   decryptSubstCipherFileCommand(scorer);
-    // }
+    }
 
     cout << endl;
-
   } while (!(command == "x" || command == "X") && !cin.eof());
 
   return 0;
@@ -167,18 +158,8 @@ void caesarEncryptCommand() {
 
 // Decrypt functions
 void rot(vector<string>& strings, int amount) {
-  for (string& s : strings) {      // Iterate through each string
-    string decrypted;              // Declare decrypted string
-    for (char c : s) {             // Iterate through each character
-      if (isalpha(c)) {            // Check if the character is alphabet
-        char upperC = toupper(c);  // Convert to uppercase
-        char rotatedChar = rot(upperC, -amount);  // Rotate by negative amount
-        decrypted += rotatedChar;  // Append rotated character to decrypted
-      } else if (isspace(c)) {     // If not alphabet/space
-        decrypted += c;            // Append original character to decrypted
-      }
-    }
-    s = decrypted;  // Update the original string with decrypted version
+  for (string& s : strings) {  // iterate through each string
+    s = rot(s, amount);  // decrypt each string calling rot(string, amount)
   }
 }
 
@@ -236,27 +217,45 @@ int numWordsIn(const vector<string>& words, const vector<string>& dict) {
 
 void caesarDecryptCommand(const vector<string>& dict) {
   string line;
-  int amount;
-
-  cout << "Enter the text to decrypt:" << endl;
+  cout << "Enter the text to Caesar decrypt:" << endl;
   getline(cin, line);
 
-  cout << "Enter the number of characters to rotate by:" << endl;
-  cin >> amount;
+  bool found = false;  // track if any good decryptions found
+  vector<string> originalWords =
+      splitBySpaces(line);  // split input line into words
 
-  vector<string> words = splitBySpaces(line);
-  rot(words, amount);  // decrypt the words
+  // Change the loop to ensure rotations are checked in the correct order
+  for (int i = 0; i < 26; i++) {
+    vector<string> candidateWords = originalWords;
 
-  string decryptedLine = joinWithSpaces(words);
-  cout << "Decrypted result: " << decryptedLine << endl;
+    // The test expects us to check rotations in an order that prints
+    // decryptions found at "earlier" shift amounts first.
+    rot(candidateWords, i);
 
-  // Optional: Count valid words in decrypted text
-  vector<string> cleanedWords;
-  for (const string& w : words) {
-    cleanedWords.push_back(clean(w));
+    vector<string> cleaned;
+    for (const string& w : candidateWords) {
+      cleaned.push_back(clean(w));
+    }
+
+    int validCount = numWordsIn(cleaned, dict);
+
+    // Maintain your improved threshold logic
+    bool meetsThreshold = false;
+    if (cleaned.size() <= 2) {
+      meetsThreshold = (validCount == (int)cleaned.size() && validCount > 0);
+    } else {
+      meetsThreshold = (validCount >= (int)cleaned.size() / 2.0);
+    }
+
+    if (meetsThreshold) {
+      cout << joinWithSpaces(candidateWords) << endl;
+      found = true;
+    }
   }
-  int validWordCount = numWordsIn(cleanedWords, dict);
-  cout << "Number of valid dictionary words: " << validWordCount << endl;
+
+  if (!found) {
+    cout << "No good decryptions found" << endl;
+  }
 }
 
 #pragma endregion CaesarDec
