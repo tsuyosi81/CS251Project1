@@ -26,8 +26,6 @@ vector<string> loadDDictionary(const string& filename) {
 }
 
 char rot(char c, int amount) {
-  // TODO: student
-
   // Find the index of the character (0-25: there are 26 characters in total)
   int charIdx = ALPHABET.find(c);
 
@@ -110,10 +108,34 @@ void rot(vector<string>& strings, int amount) {
   }
 }
 
+string clean(const string& s) {
+  string cleaned = "";        // declare cleaned string
+  for (char c : s) {          // iterate through each character
+    if (isalpha(c)) {         // check if character is alphabet
+      cleaned += toupper(c);  // convert to uppercase and append to cleaned
+    }
+  }
+  return cleaned;
+}
+
+vector<string> splitBySpaces(
+    const string&
+        s) {  // this function splits a string into words based on spaces
+  vector<string> words;
+
+  // iterate through the string
+  istringstream stream(s);
+  string word;
+  while (stream >> word) {
+    words.push_back(word);  // add each word to the vector
+  }
+  return words;
+}
+
 int main() {
   vector<string> dictionary = loadDDictionary("dictionary.txt");
 
-  string s = "cat";
+  string s = "cat123";
   char c = ALPHABET[2];  // character 'C'
   int amount = -4;       // Expected: 'C' -> 'Y'
 
@@ -133,6 +155,21 @@ int main() {
   vector<string> testStrings = {"YWP"};
   rot(testStrings, -4);
   cout << "Decrypted: " << testStrings[0] << endl;
+
+  // clean example
+  string dirty = "Hello, World! 123";
+  string cleaned = clean(dirty);
+  cout << "Dirty string: " << dirty << endl;
+  cout << "Cleaned string: " << cleaned << endl;
+
+  // splitBySpaces example
+  string phrase = "This is a test";
+  vector<string> words = splitBySpaces(phrase);
+  cout << "Original phrase: " << phrase << endl;
+  cout << "Split words:" << endl;
+  for (const string& word : words) {
+    cout << word << endl;
+  }
 
   caesarEncryptCommand();
 

@@ -72,9 +72,9 @@ int main() {
       Random::seed(stoi(seed_str));
     } else if (command == "C" || command == "c") {
       caesarEncryptCommand();
-    }  // else if (command == "D" || command == "d") {
-    //   caesarDecryptCommand(dictionary);  // <-- fixed
-    // } else if (command == "A" || command == "a") {
+    } else if (command == "D" || command == "d") {
+      caesarDecryptCommand(dictionary);
+    }  // else if (command == "A" || command == "a") {
     //   applyRandSubstCipherCommand();
     // } else if (command == "E" || command == "e") {
     //   computeEnglishnessCommand(scorer);
@@ -182,33 +182,81 @@ void rot(vector<string>& strings, int amount) {
   }
 }
 
-string clean(const string& s) {
-  string cleaned = "";        // declare cleaned string
-  for (char c : s) {          // iterate through each character
-    if (isalpha(c)) {         // check if character is alphabet
+string clean(
+    const string& s) {  // This function cleans a string by removing
+                        // non-alphabetic characters and converting to uppercase
+  string cleaned = "";  // declare cleaned string
+  for (char c : s) {    // iterate through each character
+    if (isalpha(c)) {   // check if character is alphabet
       cleaned += toupper(c);  // convert to uppercase and append to cleaned
     }
   }
   return cleaned;
 }
 
-vector<string> splitBySpaces(const string& s) {
-  // TODO: student
-  return vector<string>{};
+vector<string> splitBySpaces(
+    const string&
+        s) {  // this function splits a string into words based on spaces
+  vector<string> words;  // declare vector to hold words
+
+  // iterate through the string
+  istringstream stream(s);  // create input string stream
+  string word;              // declare variable to hold each word
+  while (stream >> word) {  // while there are words to read
+    words.push_back(word);  // add each word to the vector
+  }
+  return words;
 }
 
-string joinWithSpaces(const vector<string>& words) {
-  // TODO: student
-  return "";
+string joinWithSpaces(
+    const vector<string>&
+        words) {  // joins a vector of words into a single string with spaces
+  string result;
+  for (int i = 0; i < words.size(); i++) {  // iterate through each word
+    result += words[i];                     // add each word to the result
+    if (i < words.size() - 1) {             // if not the last word
+      result += " ";                        // add a space between words
+    }
+  }
+  return result;
 }
 
 int numWordsIn(const vector<string>& words, const vector<string>& dict) {
-  // TODO: student
-  return 0;
+  int count = 0;
+  for (const string& w : words) {   // iterate through each word in words
+    for (const string& d : dict) {  // iterate through each word in dictionary
+      if (w == d) {                 // if word matches dictionary word
+        count++;                    // increment count
+        break;
+      }
+    }
+  }
+  return count;
 }
 
 void caesarDecryptCommand(const vector<string>& dict) {
-  // TODO: student
+  string line;
+  int amount;
+
+  cout << "Enter the text to decrypt:" << endl;
+  getline(cin, line);
+
+  cout << "Enter the number of characters to rotate by:" << endl;
+  cin >> amount;
+
+  vector<string> words = splitBySpaces(line);
+  rot(words, amount);  // decrypt the words
+
+  string decryptedLine = joinWithSpaces(words);
+  cout << "Decrypted result: " << decryptedLine << endl;
+
+  // Optional: Count valid words in decrypted text
+  vector<string> cleanedWords;
+  for (const string& w : words) {
+    cleanedWords.push_back(clean(w));
+  }
+  int validWordCount = numWordsIn(cleanedWords, dict);
+  cout << "Number of valid dictionary words: " << validWordCount << endl;
 }
 
 #pragma endregion CaesarDec
