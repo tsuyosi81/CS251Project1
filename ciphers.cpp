@@ -336,7 +336,8 @@ string applySubstCipher(const vector<char>& cipher, const string& s) {
           toupper(c);  // convert the character into uppercase (toupper)
       int charIdx =
           ALPHABET.find(upperC);  // find the index of the character (0-25)
-      char substitutedChar = cipher[charIdx];  // get the substituted character
+      char substitutedChar =
+          cipher[charIdx];        // get the random substituted char
       result += substitutedChar;  // append the substituted character
     } else {                      // if not alphabet,
       result += c;                // append the original character

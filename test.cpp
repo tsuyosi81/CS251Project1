@@ -48,10 +48,7 @@ char rot(char c, int amount) {
 }
 
 string rot(const string& line, int amount) {
-  // TODO: student
-
   string result;  // declare enc result
-
   // Iterate through string
   for (char c : line) {
     // Check if the character is alphabet (isalpha)
@@ -223,63 +220,63 @@ int main() {
   cout << "String after rotating: " << encString << endl;
   cout << endl;
 
-  cout << "FUNCTION: rot() for char and string decrypt::" << endl << endl;
-  char decChar = rot(encChar, -amount);
-  string decString = rot(encString, -amount);
-  cout << "Rotating amount: " << -amount << endl;
-  cout << "Character before rotating: " << encChar << endl;
-  cout << "Character after rotating: " << decChar << endl;
-  cout << "String before rotating: " << encString << endl;
-  cout << "String after rotating: " << decString << endl;
-  cout << endl;
+  // cout << "FUNCTION: rot() for char and string decrypt::" << endl << endl;
+  // char decChar = rot(encChar, -amount);
+  // string decString = rot(encString, -amount);
+  // cout << "Rotating amount: " << -amount << endl;
+  // cout << "Character before rotating: " << encChar << endl;
+  // cout << "Character after rotating: " << decChar << endl;
+  // cout << "String before rotating: " << encString << endl;
+  // cout << "String after rotating: " << decString << endl;
+  // cout << endl;
 
-  // clean example
-  cout << "FUNCTION: clean() example::" << endl << endl;
-  string dirty = "Hello, World! 123";
-  string cleaned = clean(dirty);
-  cout << "Dirty string: " << dirty << endl;
-  cout << "Cleaned string: " << cleaned << endl;
-  cout << endl;
+  // // clean example
+  // cout << "FUNCTION: clean() example::" << endl << endl;
+  // string dirty = "Hello, World! 123";
+  // string cleaned = clean(dirty);
+  // cout << "Dirty string: " << dirty << endl;
+  // cout << "Cleaned string: " << cleaned << endl;
+  // cout << endl;
 
-  // splitBySpaces example
-  cout << "FUNCTION: splitBySpaces() example::" << endl << endl;
-  string phrase = "This is a test";
-  vector<string> words = splitBySpaces(phrase);
-  cout << "Original phrase: " << phrase << endl;
-  cout << "Split words:" << endl;
-  for (const string& word : words) {
-    cout << word << endl;
-  }
-  cout << endl;
+  // // splitBySpaces example
+  // cout << "FUNCTION: splitBySpaces() example::" << endl << endl;
+  // string phrase = "This is a test";
+  // vector<string> words = splitBySpaces(phrase);
+  // cout << "Original phrase: " << phrase << endl;
+  // cout << "Split words:" << endl;
+  // for (const string& word : words) {
+  //   cout << word << endl;
+  // }
+  // cout << endl;
 
-  // joinWithSpaces example
-  cout << "FUNCTION: joinWithSpaces() example::" << endl << endl;
-  cout << "Words to join:" << endl;
-  for (const string& word : words) {
-    cout << word << endl;
-  }
-  string joined = joinWithSpaces(words);
-  cout << "Joined phrase: " << joined << endl;
-  cout << endl;
+  // // joinWithSpaces example
+  // cout << "FUNCTION: joinWithSpaces() example::" << endl << endl;
+  // cout << "Words to join:" << endl;
+  // for (const string& word : words) {
+  //   cout << word << endl;
+  // }
+  // string joined = joinWithSpaces(words);
+  // cout << "Joined phrase: " << joined << endl;
+  // cout << endl;
 
-  // numWordsIn example
-  cout << "FUNCTION: numWordsIn() example::" << endl << endl;
-  vector<string> sampleWords = {"HELLO", "WORLD", "FOO", "BAR"};
-  vector<string> sampleDict = {"HELLO", "WORLD", "TEST"};
-  cout << "Words to check:" << endl;
-  for (const string& word : sampleWords) {
-    cout << word << endl;
-  }
-  cout << "Dictionary words:" << endl;
-  for (const string& word : sampleDict) {
-    cout << word << endl;
-  }
-  int count = numWordsIn(sampleWords, sampleDict);
-  cout << "Number of valid dictionary words: " << count << endl;
-  cout << endl;
+  // // numWordsIn example
+  // cout << "FUNCTION: numWordsIn() example::" << endl << endl;
+  // vector<string> sampleWords = {"HELLO", "WORLD", "FOO", "BAR"};
+  // vector<string> sampleDict = {"HELLO", "WORLD", "TEST"};
+  // cout << "Words to check:" << endl;
+  // for (const string& word : sampleWords) {
+  //   cout << word << endl;
+  // }
+  // cout << "Dictionary words:" << endl;
+  // for (const string& word : sampleDict) {
+  //   cout << word << endl;
+  // }
+  // int count = numWordsIn(sampleWords, sampleDict);
+  // cout << "Number of valid dictionary words: " << count << endl;
+  // cout << endl;
 
   caesarEncryptCommand();
-  caesarDecryptCommand(dictionary);
+  // caesarDecryptCommand(dictionary);
 
   return 0;
 }
