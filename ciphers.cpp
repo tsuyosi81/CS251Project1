@@ -48,19 +48,14 @@ pair<vector<string>, vector<int>> loadQuadgrams(const string& filename) {
   vector<int> counts;
   ifstream file(filename);
   string line;
-  if (file.is_open()) {
-    while (getline(file, line)) {
-      istringstream iss(line);
-      string quadgram;
-      int count;
-      if (iss >> quadgram >> count) {
-        quadgrams.push_back(quadgram);
-        counts.push_back(count);
-      }
+  while (getline(file, line)) {
+    size_t comma = line.find(',');
+    if (comma != string::npos) {
+      string quad = line.substr(0, comma);
+      int count = stoi(line.substr(comma + 1));
+      quadgrams.push_back(quad);
+      counts.push_back(count);
     }
-    file.close();
-  } else {
-    cerr << "Error: Could not open file " << filename << endl;
   }
   return {quadgrams, counts};
 }
@@ -371,16 +366,18 @@ double scoreString(const QuadgramScorer& scorer, const string& s) {
   if (s.length() < 4) {
     return 0.0;
   }
-  for (size_t i = 0; i <= s.length() - 4; i++) {
-    string quadgram = s.substr(i, 4);
-    totalScore += scorer.getScore(quadgram);  // Summing log-probabilities
+  for (int i = 0; i <= s.size() - 4;
+       i++) {  // ensure we don't go out of bounds by using s.size() - 4
+    string quadgram = s.substr(i, 4);  // extract quadgram of length 4
+    totalScore +=
+        scorer.getScore(quadgram);  // assign calculated score to totalScore
   }
   return totalScore;
 }
 
 void computeEnglishnessCommand(const QuadgramScorer& scorer) {
   string line;
-  cout << "Enter a string for englishness scoring:";
+  cout << "Enter a string for englishness scoring: ";
   getline(cin, line);
 
   string cleaned = clean(line);  // Clean the input string
@@ -395,42 +392,46 @@ vector<char> hillClimb(const QuadgramScorer& scorer, const string& ciphertext) {
 
   string bestDecryption =
       applySubstCipher(key, ciphertext);  // initial decryption
-  double bestScore = scoreString(scorer, clean(bestDecryption));
+  double bestScore =
+      scoreString(scorer, clean(bestDecryption));  // initial score
 
-  int trialsWithoutImprovement = 0;
+  int trialsWithoutImprovement = 0;  // counter for trials without improvement
 
-  while (trialsWithoutImprovement < 1000) {
-    vector<char> newKey = key;
+  while (trialsWithoutImprovement <
+         1000) {                // stop after 1000 non-improving trials
+    vector<char> newKey = key;  // copy current key
 
     // pick two random indices to swap
-    int i = Random::randInt(25);
-    int j = Random::randInt(25);
-    while (i == j) {
-      j = Random::randInt(25);
+    int i = Random::randInt(25);  // i index from 0 to 25
+    int j = Random::randInt(25);  // j index from 0 to 25
+    while (i == j) {              // while i and j are the same,
+      j = Random::randInt(25);    // re-pick j
     }
-    swap(newKey[i], newKey[j]);
+    swap(newKey[i], newKey[j]);  // swap characters at indices i and j
 
-    string candidate = applySubstCipher(newKey, ciphertext);
-    double candidateScore = scoreString(scorer, clean(candidate));
+    string candidate =
+        applySubstCipher(newKey, ciphertext);  // decrypt with new key
+    double candidateScore =
+        scoreString(scorer, clean(candidate));  // score the decryption
 
-    if (candidateScore > bestScore) {
-      key = newKey;
-      bestDecryption = candidate;
-      bestScore = candidateScore;
-      trialsWithoutImprovement = 0;
+    if (candidateScore > bestScore) {  // if candidate is better than best
+      key = newKey;                    // update key to new key
+      bestDecryption = candidate;      // update best decryption
+      bestScore = candidateScore;      // update best score
+      trialsWithoutImprovement = 0;    // reset counter
     } else {
-      trialsWithoutImprovement++;
+      trialsWithoutImprovement++;  // increment counter
     }
   }
 
-  return key;
+  return key;  // return the best key found
 }
 
 vector<char> decryptSubstCipher(const QuadgramScorer& scorer,
                                 const string& ciphertext) {
-  vector<char> bestKey;
+  vector<char> bestKey;     // to store the best key found
   double bestScore = -1e9;  // very low initial score
-  int restarts = 20;
+  int restarts = 30;        // number of hill climb restarts
 
   for (int i = 0; i < restarts; i++) {
     vector<char> candidateKey =
@@ -455,15 +456,15 @@ void decryptSubstCipherCommand(const QuadgramScorer& scorer) {
   getline(cin, line);
 
   // Process the cipher
-  vector<char> key = decryptSubstCipher(scorer, line);
-  string decrypted = applySubstCipher(key, line);
+  vector<char> key = decryptSubstCipher(scorer, line);  // get decryption key
+  string decrypted = applySubstCipher(key, line);  // decrypt the ciphertext
 
   cout << decrypted << endl;
 }
 
 // File-based substitution cipher decryption command
 void decryptSubstCipherFromFileCommand(const QuadgramScorer& scorer) {
-  string inputFilename, outputFilename;
+  string inputFilename, outputFilename;  // declare input and output filenames
   cout << "Enter input filename: ";
   getline(cin, inputFilename);
 
@@ -472,27 +473,29 @@ void decryptSubstCipherFromFileCommand(const QuadgramScorer& scorer) {
   getline(cin, outFilename);
 
   // Read ciphertext from file
-  ifstream inputFile(inputFilename);
+  ifstream inputFile(inputFilename);  // open input file
   if (!inputFile.is_open()) {
     cout << "Error: Could not open file " << inputFilename << endl;
     return;
   }
-  stringstream buffer;
-  buffer << inputFile.rdbuf();
-  string ciphertext = buffer.str();
-  inputFile.close();
+  stringstream buffer;               // create stringstream buffer
+  buffer << inputFile.rdbuf();       // read file content into buffer
+  string ciphertext = buffer.str();  // get string from buffer
+  inputFile.close();                 // close input file
   // Uppercase letters, keep spaces/punctuation as-is
-  for (char& c : ciphertext) {
-    if (isalpha(c)) {
-      c = toupper(c);
+  for (char& c : ciphertext) {  // iterate through each character
+    if (isalpha(c)) {           // check if character is alphabet
+      c = toupper(c);           // convert to uppercase
     }
   }
 
   // Decrypt
-  vector<char> key = decryptSubstCipher(scorer, ciphertext);
-  string decrypted = applySubstCipher(key, ciphertext);
+  vector<char> key =
+      decryptSubstCipher(scorer, ciphertext);  // get decryption key
+  string decrypted =
+      applySubstCipher(key, ciphertext);  // decrypt the ciphertext
   // Write decrypted text to output file
-  ofstream outputFile(outFilename);
+  ofstream outputFile(outFilename);  // open output file
   if (!outputFile.is_open()) {
     cout << "Error: Could not open file." << outFilename << endl;
     return;
