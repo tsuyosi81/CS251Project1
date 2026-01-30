@@ -478,7 +478,7 @@ void decryptSubstCipherFromFileCommand(const QuadgramScorer& scorer) {
     cout << "Error: Could not open file " << inputFilename << endl;
     return;
   }
-  stringstream buffer;               // create stringstream buffer
+  stringstream buffer;  // create stringstream buffer to hold file content
   buffer << inputFile.rdbuf();       // read file content into buffer
   string ciphertext = buffer.str();  // get string from buffer
   inputFile.close();                 // close input file
@@ -494,6 +494,7 @@ void decryptSubstCipherFromFileCommand(const QuadgramScorer& scorer) {
       decryptSubstCipher(scorer, ciphertext);  // get decryption key
   string decrypted =
       applySubstCipher(key, ciphertext);  // decrypt the ciphertext
+
   // Write decrypted text to output file
   ofstream outputFile(outFilename);  // open output file
   if (!outputFile.is_open()) {
